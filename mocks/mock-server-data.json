@@ -1,0 +1,60 @@
+{
+    "api": {
+        "title": [
+            "Luxury apartment",
+            "Riverside house",
+            "Large and cozy hotel",
+            "Family apartment",
+            "Modern apartment with smart home"
+        ],
+        "description": [
+            "Modern apartment in the city center",
+            "Spacious house on the river bank. Ideal place for a vacation in nature",
+            "Spacious and cozy hotel in the heart of Brussels, ideal for a comfortable stay",
+            "Cozy apartment for the whole family in Hamburg, with amenities for a comfortable stay",
+            "Modern apartment with smart home system in Düsseldorf for those who appreciate innovation and comfort"
+        ],
+        "houseImages": [
+            "https://example.com/images/preview1.jpg",
+            "https://example.com/images/preview2.jpg",
+            "https://example.com/images/preview3.jpg",
+            "https://example.com/images/preview4.jpg",
+            "https://example.com/images/preview5.jpg"
+        ],
+        "city": [
+            "Paris",
+            "Amsterdam",
+            "Brussels",
+            "Hamburg",
+            "Düsseldorf"
+        ],
+        "rating": [
+            1,
+            2,
+            3,
+            4,
+            5
+        ],
+        "username": [
+            "Jack",
+            "Ivan",
+            "Kevin",
+            "Mary",
+            "Alla"
+        ],
+        "email": [
+            "jack@gmail.com",
+            "ivan@mail.ru",
+            "kevin@gmail.com",
+            "mary@gmail.com",
+            "alla@gmail.com"
+        ],
+        "avatarImage": [
+            "ava1.jpg",
+            "ava2.jpg",
+            "ava3.jpg",
+            "ava4.jpg",
+            "ava5.jpg"
+        ]
+    }
+}
