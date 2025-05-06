@@ -24,9 +24,9 @@ export class ImportCommand implements Command {
     fileReader.on('end', this.onCompleteImport);
 
     try {
-        fileReader.read();
+      fileReader.read();
     } catch (error) {
-        console.error('Cant import from this file');
+      console.error('Cant import from this file');
     }
-}
+  }
 }
