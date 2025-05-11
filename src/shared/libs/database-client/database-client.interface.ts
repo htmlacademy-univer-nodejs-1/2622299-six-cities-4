@@ -1,7 +1,7 @@
 export interface DatabaseClient {
     connect({
-        uri,
-        params,
+      uri,
+      params,
     }: {
         uri: string;
         params: {

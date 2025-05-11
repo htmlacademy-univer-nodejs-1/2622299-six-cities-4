@@ -9,4 +9,4 @@ export const customFormats: { [name: string]: Format } = {
     },
     coerce: (value: unknown) => String(value),
   },
-}
+};

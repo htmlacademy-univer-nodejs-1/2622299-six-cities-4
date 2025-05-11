@@ -56,4 +56,4 @@ export const configRestSchema = convict<RestSchema>({
     env: 'DB_NAME',
     default: 'buy-and-sell',
   },
-})
+});

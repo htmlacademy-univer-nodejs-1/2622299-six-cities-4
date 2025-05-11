@@ -17,7 +17,7 @@ import { DEFAULT_USER_PASSWORD } from './command.constant.js';
 import { getMongoURI } from '../../shared/helpers/index.js';
 
 export class ImportCommand implements Command {
-   private userService: UserService;
+  private userService: UserService;
   private databaseClient: DatabaseClient;
   private offerService: OfferService;
   private logger: Logger;
@@ -93,7 +93,6 @@ export class ImportCommand implements Command {
 
     fileReader.on('line', this.onImportedLine);
     fileReader.on('end', this.onCompleteImport);
-    
     try {
       fileReader.read();
     } catch (err) {
