@@ -1,0 +1,9 @@
+POST http://localhost:4000/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Ivan Ivanov",
+  "email": "pochta@email.com",
+  "avatar": "image.png",
+  "password": "parol12345"
+}
