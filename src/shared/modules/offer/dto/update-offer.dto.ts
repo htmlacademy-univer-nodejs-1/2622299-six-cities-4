@@ -12,7 +12,7 @@ export class UpdateOfferDto {
   @MinLength(20, { message: UpdateOfferValidationMessage.description.minLength })
   @MaxLength(1024, { message: UpdateOfferValidationMessage.description.maxLength })
   @IsOptional()
-  @IsDateString( {}, { message: UpdateOfferValidationMessage.date.invalidFormat })
+  @IsDateString({}, { message: UpdateOfferValidationMessage.date.invalidFormat })
 
   @IsOptional()
   @IsEnum(TownType, { message: UpdateOfferValidationMessage.town.invalidTown })
@@ -57,8 +57,9 @@ export class UpdateOfferDto {
   @IsArray()
   @ArrayNotEmpty({ message: UpdateOfferValidationMessage.amenities.empty })
   @IsIn(AMENITY_VALUES, { each: true, message: UpdateOfferValidationMessage.amenities.includeAmenities })
-  
+
   public title?: string;
+
   public description?: string;
   public image?: string;
   public date?: Date;

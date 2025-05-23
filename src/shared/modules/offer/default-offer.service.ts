@@ -23,7 +23,7 @@ export class DefaultOfferService implements OfferService {
     @inject(Component.FavoriteModel)
     private readonly favoriteModel: types.ModelType<FavoriteEntity>,
     @inject(Component.CommentModel)
-    private readonly commentModel: types.ModelType<CommentEntity>  ) {}
+    private readonly commentModel: types.ModelType<CommentEntity>) {}
 
   public async find(
     userId: string,

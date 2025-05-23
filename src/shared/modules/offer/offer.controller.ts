@@ -16,7 +16,7 @@ import { UpdateOfferDto } from './dto/update-offer.dto.js';
 
 @injectable()
 export default class OfferController extends BaseController {
-   constructor(
+  constructor(
     @inject(Component.Logger) logger: Logger,
     @inject(Component.OfferService) private readonly offerService: OfferService,
     @inject(Component.CommentService)
