@@ -11,7 +11,7 @@ export class CreateOfferDto {
   @MaxLength(100, { message: CreateOfferValidationMessage.title.maxLength })
   @MinLength(20, { message: CreateOfferValidationMessage.description.minLength })
   @MaxLength(1024, { message: CreateOfferValidationMessage.description.maxLength })
-  @IsDateString( {}, { message: CreateOfferValidationMessage.date.invalidFormat })
+  @IsDateString({}, { message: CreateOfferValidationMessage.date.invalidFormat })
   @IsEnum(TownType, { message: CreateOfferValidationMessage.town.invalidTown })
   @MaxLength(256, { message: CreateOfferValidationMessage.image.maxLength })
   @IsArray()
@@ -36,8 +36,9 @@ export class CreateOfferDto {
   @ArrayNotEmpty({ message: CreateOfferValidationMessage.amenities.empty })
   @IsIn(AMENITY_VALUES, { each: true, message: CreateOfferValidationMessage.amenities.includeAmenities })
   @IsMongoId({ message: CreateOfferValidationMessage.userId.invalidId })
-  
+
   public title!: string;
+
   public description!: string;
   public image!: string;
   public date!: Date;

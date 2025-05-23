@@ -53,6 +53,7 @@ export class Application {
 
   private async _initMiddleware() {
     this.server.use(express.json());
+    this.server.use('/uploads', express.static(this.config.get('UPLOADS_DIRECTORY')));
   }
 
   private async _initExceptionFilters() {

@@ -13,6 +13,7 @@ export class CreateUserDto {
   @IsEnum(UserType, { message: CreateUserMessages.type.invalidType })
 
   public mail!: string;
+
   public name!: string;
   public avatar!: string | null;
   public password!: string;
