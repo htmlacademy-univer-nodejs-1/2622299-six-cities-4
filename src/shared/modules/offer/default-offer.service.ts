@@ -25,22 +25,14 @@ export class DefaultOfferService implements OfferService {
     @inject(Component.CommentModel)
     private readonly commentModel: types.ModelType<CommentEntity>  ) {}
 
-    public async find(
-      userId: string,
-      count?: number
-    ): Promise<types.DocumentType<OfferSummaryEntity>[]> {
-      const limit =
-        count && count > DEFAULT_OFFER_MAX_LIMIT
-          ? DEFAULT_OFFER_MAX_LIMIT
-          : count;
-
-      const offers = await this.offerSummaryModel
-        .find()
-        .limit(limit ?? DEFAULT_OFFER_MAX_LIMIT)
-        .exec();
-
-      return this.withFavorites(offers, userId);
-    }
+  public async find(
+    userId: string,
+    count?: number
+  ): Promise<types.DocumentType<OfferSummaryEntity>[]> {
+    const limit = count && count > DEFAULT_OFFER_MAX_LIMIT ? DEFAULT_OFFER_MAX_LIMIT : count;
+    const offers = await this.offerSummaryModel.find().limit(limit ?? DEFAULT_OFFER_MAX_LIMIT).exec();
+    return this.withFavorites(offers, userId);
+  }
 
   public async create(
     dto: CreateOfferDto
