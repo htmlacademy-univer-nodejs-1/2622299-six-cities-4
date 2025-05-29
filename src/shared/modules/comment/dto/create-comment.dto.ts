@@ -11,9 +11,7 @@ export class CreateCommentDto {
   @IsMongoId({ message: CreateCommentMessages.author.invalidFormat })
   public author!: string;
 
-  @IsMongoId({ message: CreateCommentMessages.offerId.invalidFormat })
   public offerId!: string;
-
   public text!: string;
   public date!: string;
   public rating!: string;

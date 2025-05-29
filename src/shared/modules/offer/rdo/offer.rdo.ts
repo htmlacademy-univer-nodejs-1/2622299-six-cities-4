@@ -50,4 +50,7 @@ export class OfferRdo {
 
   @Expose()
   public userId!: string;
+
+  @Expose()
+  public coordinates!: number;
 }

@@ -1,19 +1,19 @@
 export const CreateCommentMessages = {
   text: {
-    invalidFormat: 'text is required',
-    lengthField: 'min length is 5, max is 1024',
+    invalidFormat: 'Text is required',
+    lengthField: 'Length must be between 5 and 1024 characters',
   },
   date: {
-    invalidFormat: 'PostDate must be a valid ISO date',
+    invalidFormat: 'Date must be a valid ISO string',
   },
   rating: {
-    min: 'Min 1',
-    max: 'Max 5',
+    min: 'Rating must be at least 1',
+    max: 'Rating cannot exceed 5',
   },
   author: {
-    invalidFormat: 'userId field must be a valid id',
+    invalidFormat: 'Author ID must be a valid MongoDB ObjectId',
   },
   offerId: {
-    invalidFormat: 'offerId field must be a valid id',
+    invalidFormat: 'Offer ID must be a valid MongoDB ObjectId',
   },
 } as const;

@@ -1,9 +1,5 @@
 import { inject, injectable } from 'inversify';
-import {
-  BaseController,
-  HttpMethod,
-  ValidateDtoMiddleware,
-} from '../../libs/rest/index.js';
+import { BaseController, HttpMethod, ValidateDtoMiddleware, PrivateRouteMiddleware } from '../../libs/rest/index.js';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { CommentRdo, CommentService, CreateCommentDto } from './index.js';
@@ -18,25 +14,33 @@ export default class CommentController extends BaseController {
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.CommentService)
     private readonly commentService: CommentService,
-    @inject(Component.OfferService) private readonly offerService: OfferService
+    @inject(Component.OfferService) private readonly offerService: OfferService,
   ) {
     super(logger);
 
-    this.logger.info('Register routes for CommentController…');
+    this.logger.info('Initializing routes for CommentController...');
     this.addRoute({
       path: '/',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateCommentDto)],
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateDtoMiddleware(CreateCommentDto),
+      ],
     });
   }
 
   public async create(
-    { body }: CreateCommentRequest,
-    res: Response
+    { body, tokenPayload }: CreateCommentRequest,
+    res: Response,
   ): Promise<void> {
-    const comment = await this.commentService.create(body);
+    const newComment = await this.commentService.create({
+      ...body,
+      author: tokenPayload.id,
+    });
+
     await this.offerService.incCommentCount(body.offerId);
-    this.created(res, fillDTO(CommentRdo, comment));
+
+    this.created(res, fillDTO(CommentRdo, newComment));
   }
 }

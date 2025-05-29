@@ -24,13 +24,11 @@ export class TSVOfferGenerator implements OfferGenerator{
     const amenity = getRandomItem(this.mockData.amenities);
     const author = getRandomItem(this.mockData.authors);
     const commentCount = getRandomItem(this.mockData.commentCounts);
-
     const createdDate = dayjs(date).format('MM-DD-YYYY');
     const stringCoordinates = JSON.stringify(coordinates);
     const stringAuthor = JSON.stringify(author);
     const stringAmenity = JSON.stringify(amenity);
     const stringGallery = JSON.stringify(gallery);
-
     const resultOfGenerating = [
       title,
       description,
