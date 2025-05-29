@@ -1,49 +1,49 @@
 export const UpdateOfferValidationMessage = {
   title: {
-    minLength: 'Title must be at least 10 characters long',
-    maxLength: 'Title cannot exceed 100 characters',
+    minLength: 'Title must contain at least 10 characters.',
+    maxLength: 'Title cannot be longer than 100 characters.',
   },
   description: {
-    minLength: 'Description should be at least 20 characters long',
-    maxLength: 'Description must not exceed 1024 characters',
+    minLength: 'Description must be at least 20 characters long.',
+    maxLength: 'Description cannot exceed 1024 characters.',
   },
   date: {
-    invalidFormat: 'Post date must be a valid ISO-formatted date',
+    invalidFormat: 'Date must be in a valid ISO format.',
   },
   image: {
-    maxLength: 'Image field is too short',
+    maxLength: 'Image field is too short or missing.',
   },
   town: {
-    invalidTown: 'Town must be selected from the list of predefined cities',
+    invalidTown: 'Town must be selected from the available options.',
   },
   gallery: {
-    minLength: 'Gallery must contain exactly 6 images',
-    maxLength: 'Gallery must contain exactly 6 images',
+    minLength: 'Gallery must include exactly 6 images.',
+    maxLength: 'Gallery must include exactly 6 images.',
   },
   rating: {
-    min: 'Rating must be at least 1',
-    max: 'Rating cannot be greater than 5',
+    min: 'Rating must be at least 1.',
+    max: 'Rating cannot exceed 5.',
   },
   apartmentType: {
-    invalidApartment: 'Apartment type must be one of the allowed options',
+    invalidApartment: 'Please select a valid apartment type.',
   },
   roomCount: {
-    min: 'At least 1 room is required',
-    max: 'No more than 8 rooms are allowed',
+    min: 'At least one room is required.',
+    max: 'The number of rooms cannot exceed 8.',
   },
   guestCount: {
-    min: 'Guest count must be at least 1',
-    max: 'Guest count cannot exceed 10',
+    min: 'There must be at least one guest.',
+    max: 'Guest count cannot be more than 10.',
   },
   cost: {
-    min: 'Cost must be no less than 100',
-    max: 'Cost must not be more than 100,000',
+    min: 'Cost must be at least 100.',
+    max: 'Cost cannot exceed 100,000.',
   },
   amenities: {
-    empty: 'Select at least one amenity',
-    includeAmenities: 'All amenities must be from the predefined list',
+    empty: 'Please select at least one amenity.',
+    includeAmenities: 'Selected amenities must match the allowed list.',
   },
   userId: {
-    invalidId: 'The userId must be a valid identifier',
+    invalidId: 'User ID must be a valid MongoDB identifier.',
   },
 } as const;

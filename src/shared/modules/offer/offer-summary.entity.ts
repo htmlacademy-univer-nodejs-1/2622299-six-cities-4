@@ -21,43 +21,34 @@ export class OfferSummaryEntity extends defaultClasses.TimeStamps {
   @prop({ trim: true, required: true })
   public title!: string;
 
-  @prop()
+  @prop({ required: true })
   public cost!: number;
 
-  @prop({
-    type: () => String,
-    enum: ApartmentType,
-  })
+  @prop({ type: () => String, enum: ApartmentType, required: true })
   public apartmentType!: ApartmentType;
 
-  @prop()
+  @prop({ default: false })
   public isFavorite!: boolean;
 
-  @prop()
+  @prop({ required: true })
   public date!: Date;
 
-  @prop({
-    type: () => String,
-    enum: TownType,
-  })
+  @prop({ type: () => String, enum: TownType, required: true })
   public town!: TownType;
 
   @prop()
-  public image!: string;
+  public previewImage!: string;
 
-  @prop()
+  @prop({ default: false })
   public isPremium!: boolean;
 
-  @prop()
+  @prop({ default: 0 })
   public rating!: number;
 
-  @prop()
+  @prop({ default: 0 })
   public commentCount!: number;
 
-  @prop({
-    ref: UserEntity,
-    required: true,
-  })
+  @prop({ ref: UserEntity, required: true })
   public userId!: Ref<UserEntity>;
 }
 

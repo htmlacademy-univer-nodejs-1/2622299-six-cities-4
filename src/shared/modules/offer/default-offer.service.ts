@@ -6,11 +6,13 @@ import { OfferEntity } from './offer.entity.js';
 import { types } from '@typegoose/typegoose';
 import { CreateOfferDto } from './dto/create-offer.dto.js';
 import { OfferSummaryEntity } from './offer-summary.entity.js';
-import { DEFAULT_OFFER_MAX_LIMIT } from './offer.constant.js';
 import { UpdateOfferDto } from './dto/update-offer.dto.js';
 import { TownType } from '../../types/town-type.enum.js';
 import { FavoriteEntity } from '../favorite/index.js';
 import { CommentEntity } from '../comment/comment.entity.js';
+import { DEFAULT_PREMIUM_BY_TOWN_MAX_LIMIT } from './offer.constant.js';
+import { StatusCodes } from 'http-status-codes';
+import { HttpError } from '../../libs/rest/index.js';
 
 @injectable()
 export class DefaultOfferService implements OfferService {
@@ -23,75 +25,132 @@ export class DefaultOfferService implements OfferService {
     @inject(Component.FavoriteModel)
     private readonly favoriteModel: types.ModelType<FavoriteEntity>,
     @inject(Component.CommentModel)
-    private readonly commentModel: types.ModelType<CommentEntity>) {}
+    private readonly commentModel: types.ModelType<CommentEntity>
+  ) {}
+
+  public async exists(documentId: string): Promise<boolean> {
+    return (await this.offerModel.exists({ _id: documentId })) !== null;
+  }
 
   public async find(
-    userId: string,
-    count?: number
-  ): Promise<types.DocumentType<OfferSummaryEntity>[]> {
-    const limit = count && count > DEFAULT_OFFER_MAX_LIMIT ? DEFAULT_OFFER_MAX_LIMIT : count;
-    const offers = await this.offerSummaryModel.find().limit(limit ?? DEFAULT_OFFER_MAX_LIMIT).exec();
-    return this.withFavorites(offers, userId);
+    count: number,
+    userId?: string
+  ): Promise<OfferSummaryEntity[]> {
+    const offers = await this.offerSummaryModel
+      .find()
+      .sort({ date: -1 })
+      .limit(count)
+      .lean<OfferSummaryEntity[]>()
+      .exec();
+
+    const normalizedOffers = offers.map((offer) => ({
+      ...offer,
+      id: offer._id.toString(),
+    }));
+
+    if (userId) {
+      return this.withFavorites(normalizedOffers, userId);
+    }
+
+    return normalizedOffers;
   }
 
   public async create(
     dto: CreateOfferDto
   ): Promise<types.DocumentType<OfferEntity>> {
     const result = await this.offerModel.create(dto);
-    this.logger.info(`New offer created: ${dto.title}`);
+    this.logger.info(`Offer successfully created: ${dto.title}`);
 
     return result;
   }
 
   public async findById(
     offerId: string,
-    userId: string
+    userId: string | null
   ): Promise<
     (types.DocumentType<OfferEntity> & { isFavorite: boolean }) | null
   > {
     const offer = await this.offerModel.findById(offerId).exec();
 
-    if (!offer) {
-      return null;
+    if (userId) {
+      const isFavorite = await this.favoriteModel
+        .findOne({ userId, offerId })
+        .exec();
+
+      offer!.isFavorite = Boolean(isFavorite);
     }
-
-    const isFavorite = await this.favoriteModel
-      .findOne({ userId, offerId })
-      .exec();
-
-    offer.isFavorite = Boolean(isFavorite);
 
     return offer;
   }
 
   public async updateById(
     offerId: string,
-    dto: UpdateOfferDto
+    dto: UpdateOfferDto,
+    userId: string
   ): Promise<types.DocumentType<OfferEntity> | null> {
+    const existingOffer = await this.offerModel.findById(offerId).exec();
+
+    if (existingOffer!.userId.toString() !== userId) {
+      throw new HttpError(
+        StatusCodes.CONFLICT,
+        'You are not allowed to modify this offer',
+        'OfferService'
+      );
+    }
+
     return this.offerModel
       .findByIdAndUpdate(offerId, dto, { new: true })
       .exec();
   }
 
   public async deleteById(
-    offerId: string
+    offerId: string,
+    userId: string
   ): Promise<types.DocumentType<OfferEntity> | null> {
+    const existingOffer = await this.offerModel.findById(offerId).exec();
+
+    if (existingOffer!.userId.toString() !== userId) {
+      throw new HttpError(
+        StatusCodes.CONFLICT,
+        'You are not authorized to delete this offer',
+        'OfferService'
+      );
+    }
+
     return this.offerModel.findByIdAndDelete(offerId).exec();
   }
 
   public async findPremOffersByTown(
-    userId: string,
+    userId: string | null,
     town: TownType
-  ): Promise<types.DocumentType<OfferSummaryEntity>[]> {
-    const offers = await this.offerSummaryModel.find({ town }).exec();
+  ): Promise<OfferSummaryEntity[]> {
+    const offers = await this.offerSummaryModel
+      .find({ town, isPremium: true })
+      .limit(DEFAULT_PREMIUM_BY_TOWN_MAX_LIMIT)
+      .sort({ date: -1 })
+      .lean<OfferSummaryEntity[]>()
+      .exec();
 
-    return this.withFavorites(offers, userId);
+    const normalizedOffers = offers.map((offer) => ({
+      ...offer,
+      id: offer._id.toString(),
+    }));
+
+    if (userId) {
+      return this.withFavorites(normalizedOffers, userId);
+    }
+    return normalizedOffers;
   }
 
   public async getUserFavorites(
     userId: string
   ): Promise<types.DocumentType<OfferSummaryEntity>[]> {
     const favorites = await this.favoriteModel.find({ userId }).exec();
+
+    if (favorites.length === 0) {
+      return [];
+    }
+
     const offerIds = favorites.map((fav) => fav.offerId);
 
     return this.offerSummaryModel.find({ _id: { $in: offerIds } }).exec();
@@ -105,23 +164,32 @@ export class DefaultOfferService implements OfferService {
       .findOne({ userId, offerId })
       .exec();
 
-    if (!existing) {
-      await this.favoriteModel.create({ userId, offerId });
+    if (existing) {
+      throw new HttpError(
+        StatusCodes.CONFLICT,
+        'This offer is already marked as favorite',
+        'OfferService'
+      );
     }
+
+    await this.favoriteModel.create({ userId, offerId });
 
     const offer = await this.offerSummaryModel.findById(offerId).exec();
 
-    if (!offer) {
-      throw new Error('Offer not found');
-    }
+    offer!.isFavorite = true;
 
-    offer.isFavorite = true;
-
-    return offer;
+    return offer!;
   }
 
-  public async deleteFavorite(userId: string, offerId: string): Promise<void> {
-    await this.favoriteModel.deleteOne({ userId, offerId });
+  public async deleteFavorite(
+    userId: string,
+    offerId: string
+  ): Promise<boolean> {
+    const result = await this.favoriteModel
+      .deleteOne({ userId, offerId })
+      .exec();
+
+    return result.deletedCount === 1;
   }
 
   public async incCommentCount(
@@ -158,7 +226,7 @@ export class DefaultOfferService implements OfferService {
       .find({ userId })
       .lean<{ offerId: string }[]>()
       .exec();
-    const offerIds = new Set(favorites.map((f) => f.offerId.toString()));
+    const offerIds = new Set(favorites.map((f) => f.offerId));
 
     return offers.map((offer) => ({
       ...offer,

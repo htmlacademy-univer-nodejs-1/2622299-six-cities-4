@@ -1,9 +1,4 @@
-import {
-  defaultClasses,
-  getModelForClass,
-  modelOptions,
-  prop,
-} from '@typegoose/typegoose';
+import { defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 
 export interface OfferEntity extends defaultClasses.Base {}
 
@@ -13,7 +8,7 @@ export interface OfferEntity extends defaultClasses.Base {}
   },
 })
 export class CommentEntity extends defaultClasses.TimeStamps {
-  @prop({ trim: true, required: true })
+  @prop({ required: true, trim: true })
   public text!: string;
 
   @prop()
@@ -24,6 +19,9 @@ export class CommentEntity extends defaultClasses.TimeStamps {
 
   @prop()
   public offerId!: string;
+
+  @prop()
+  public date!: Date;
 }
 
 export const CommentModel = getModelForClass(CommentEntity);
