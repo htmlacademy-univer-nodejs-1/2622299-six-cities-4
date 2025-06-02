@@ -1,6 +1,11 @@
 import { inject, injectable } from 'inversify';
 import { Component } from '../../types/component.enum.js';
-import { BaseController, DocumentExistsMiddleware, HttpMethod, PrivateRouteMiddleware, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
+import { BaseController,
+  DocumentExistsMiddleware,
+  HttpMethod,
+  PrivateRouteMiddleware,
+  ValidateDtoMiddleware,
+  ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Request, Response } from 'express';
 import { CreateOfferDto, OfferRdo, OfferService, OfferSummaryRdo } from './index.js';
@@ -19,8 +24,7 @@ export default class OfferController extends BaseController {
   constructor(
     @inject(Component.Logger) logger: Logger,
     @inject(Component.OfferService) private readonly offerService: OfferService,
-    @inject(Component.CommentService)
-    private readonly commentService: CommentService
+    @inject(Component.CommentService) private readonly commentService: CommentService,
   ) {
     super(logger);
 

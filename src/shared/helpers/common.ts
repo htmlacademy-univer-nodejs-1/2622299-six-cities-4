@@ -1,6 +1,8 @@
 import { ClassConstructor, plainToInstance } from 'class-transformer';
+import { ValidationError } from 'class-validator';
 import { TownType } from '../types/town-type.enum.js';
 import { COORDINATES_BY_TOWN } from '../types/coordinates.constant.js';
+import { ApplicationError, ValidationErrorField } from '../libs/rest/index.js';
 
 export function generateRandomValue(min: number, max: number, numAfterDigit = 0) {
   return +(Math.random() * (max - min) + min).toFixed(numAfterDigit);
@@ -20,10 +22,8 @@ export function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : '';
 }
 
-export function createErrorObject(message: string) {
-  return {
-    error: message,
-  };
+export function createErrorObject(errorType: ApplicationError, error: string, details: ValidationErrorField[] = []) {
+  return { errorType, error, details };
 }
 
 export function fillDTO<T, V>(someDto: ClassConstructor<T>, plainObject: V) {
@@ -34,4 +34,16 @@ export function fillDTO<T, V>(someDto: ClassConstructor<T>, plainObject: V) {
 
 export function getCoordinatesByTown(town: TownType) {
   return COORDINATES_BY_TOWN[town];
+}
+
+export function reduceValidationErrors(errors: ValidationError[]): ValidationErrorField[] {
+  return errors.map(({ property, value, constraints}) => ({
+    property,
+    value,
+    messages: constraints ? Object.values(constraints) : []
+  }));
+}
+
+export function getFullServerPath(host: string, port: number) {
+  return `http://${host}:${port}`;
 }
