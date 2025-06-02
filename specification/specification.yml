@@ -21,7 +21,7 @@ paths:
       tags:
         - comments
       summary: Создать комментарий
-      description: Создание комментария.
+      description: Создание комментария
 
       requestBody:
         description: Информация для создания нового комментария.
@@ -38,39 +38,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/comment'
-
-  /comments/{offerId}:
-    get:
-      tags:
-        - comments
-      summary: Получить список комментариев
-      description: Получение списка комментариев по номеру предложения
-      parameters:
-        - name: offerId
-          in: path
-          required: true
-          schema:
-            type: string
-            example: 6329c3d6a04ab1061c6425eo
-          description: ID предложения, для которого запрашиваются комментарии
-
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            maximum: 50
-            example: 10
-          description: Количество комментариев для получения
-
-      responses:
-        '200':
-          description: Список комментариев
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/comment'
 
   /users/register:
     post:
@@ -96,25 +63,42 @@ paths:
                 $ref: '#/components/schemas/user'
 
         '409':
-          description: Пользователь с таким mail уже существует.
+          description: Пользователь с таким mail уже существует
   /users/login:
     post:
       tags:
         - users
       summary: Авторизация пользователя
-      description: Авторизация пользователя на основе логина и пароля.
+      description: Авторизует пользователя на основе логина и пароля
+
+      requestBody:
+        description: Информация для авторизации.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginUser'
+        required: true
+
+      responses:
+        '201':
+          description: Пользователь авторизирован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userAuthorized'
     get:
       tags:
         - users
       summary: Проверка состояния пользователя.
-      description: Возврат информации о пользователе.
+      description: Возвращает информацию по авторизированном пользователю.
 
-  # /users/{userId}/avatar:
-  #   post:
-  #     tags:
-  #       - users
-  #     summary: Загрузить изображение
-  #     description: Загрузка изображения аватара пользователя.
+      responses:
+        '201':
+          description: Пользователь точно авторизирован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/isAuthorized'
 
   /offers:
     get:
@@ -143,10 +127,10 @@ paths:
       tags:
         - offers
       summary: Создать предложение
-      description: Создание предложения.
+      description: Создание предложения
 
       requestBody:
-        description: Информация для создания предложения.
+        description: Информация для создания предложения
         content:
           application/json:
             schema:
@@ -166,7 +150,7 @@ paths:
       tags:
         - offers
       summary: Получить подробную информацию
-      description: Получение подробной информации.
+      description: Получение подробной информации
       parameters:
         - name: offerId
           in: path
@@ -174,7 +158,7 @@ paths:
           schema:
             type: string
             example: 6329c3d6a04ab1061c6425ef
-          description: Идентификатор предложения.
+          description: Идентификатор предложения
 
       responses:
         '200':
@@ -220,6 +204,8 @@ paths:
           description: Неверные данные
         '404':
           description: Предложение не найдено
+        '500':
+          description: Не является автором предложения
 
     delete:
       tags:
@@ -269,7 +255,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/offerSummary'
-  /offers/favourites:
+  /offers/favorites:
     get:
       tags:
         - offers
@@ -321,43 +307,59 @@ paths:
         '200':
           description: Предложение удалено из избранного
 
+  /offers/{offerId}/comments:
+    get:
+      tags:
+        - offers
+      summary: Получить список комментариев
+      description: Получение списка комментариев по номеру предложения
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 6329c3d6a04ab1061c6425ef
+          description: ID предложения, для которого запрашиваются комментарии
+
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            maximum: 50
+            example: 10
+          description: Количество комментариев для получения
+
+      responses:
+        '200':
+          description: Список комментариев
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+
 components:
   schemas:
-    createUser:
+    loginUser:
       type: object
-      required: [mail, name, password, type]
+      required: [mail, password]
 
       properties:
         mail:
           type: string
           example: keks@htmlacademy.ru
 
-        name:
-          type: string
-          example: Keks
-
-        avatar:
-          type: string
-          example: https://example.avatar.com
-
         password:
           type: string
-          example: password123
+          example: 123456
 
-        type:
-          type: string
-          enum: [обычный, pro]
-          example: обычный
-
-    user:
+    createUser:
       type: object
-      required: [id, mail, name, type]
+      required: [mail, name, avatar, password, type]
 
       properties:
-        id:
-          type: string
-          example: 5f4dcc3b5aa765d61d8327deb882cf99vdvd515vdvd
-
         mail:
           type: string
           example: keks@htmlacademy.ru
@@ -370,10 +372,60 @@ components:
           type: [string, 'null']
           example: https://gravatar.com/avatar/7cb23e9dcb44eeff5331a137414a0f1b?s=400&d=robohash&r=x
 
+        password:
+          type: string
+          example: 123456
+
         type:
           type: string
-          enum: [обычный, pro]
-          example: обычный
+          enum: [regular, pro]
+          example: regular
+
+    isAuthorized:
+      type: object
+
+      properties:
+        mail:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+
+    userAuthorized:
+      type: object
+
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiJ9.eyJtYWlsIjoia2Vrc0BodG1sYWNhZGVteS5ydSIsIm5hbWUiOiJLZWtzIiwiaWQiOiI2ODMzMWY5ODU5YTc5YTY0ZjhiZDQ3ODciLCJpYXQiOjE3NDgxODExOTgsImV4cCI6MTc0ODM1Mzk5OH0.E2ZC0I9ScvCWajCnJ-WgNbNzdbqa11oBsaZvFri08fE
+
+        mail:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+
+    user:
+      type: object
+      required: [id, mail, name, type]
+
+      properties:
+        id:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+
+        mail:
+          type: string
+          example: keks@htmlacademy.ru
+
+        name:
+          type: string
+          example: Keks
+
+        avatar:
+          type: string
+          example: https://gravatar.com/avatar/7cb23e9dcb44eeff5331a137414a0f1b?s=400&d=robohash&r=x
+
+        type:
+          type: string
+          enum: [regular, pro]
+          example: regular
 
     updateOffer:
       type: object
@@ -381,24 +433,24 @@ components:
       properties:
         title:
           type: string
-          example: Luxury apartment in Paris
+          example: Modern Loft in Berlin
 
         description:
           type: string
-          example: Luxury apartment in Paris
+          example: Cozy loft with a stunning view of the city
 
         image:
           type: string
-          example: image1.png
+          example: image.jpg
 
         date:
           type: string
           format: date
-          example: 2025-01-01
+          example: 2025-06-01
 
         cost:
           type: number
-          example: 10000
+          example: 180
 
         town:
           type: string
@@ -409,7 +461,7 @@ components:
           type: array
           items:
             type: string
-          example: [image1.png, image2.png, image3.png]
+          example: [image1.jpg, image2.jpg, image3.jpg, image4.jpg, image5.jpg, image6.jpg]
 
         isPremium:
           type: boolean
@@ -417,11 +469,11 @@ components:
 
         isFavorite:
           type: boolean
-          example: true
+          example: false
 
         rating:
           type: number
-          example: 5
+          example: 4.5
 
         apartmentType:
           type: string
@@ -430,11 +482,11 @@ components:
 
         roomCount:
           type: integer
-          example: 5
+          example: 4
 
         guestCount:
           type: integer
-          example: 2
+          example: 4
 
         amenities:
           type: array
@@ -450,7 +502,7 @@ components:
                 Towels,
                 Fridge,
               ]
-            example: [Breakfast, Air conditioning, Washer]
+            example: [Fridge, Breakfast, Washer]
 
         userId:
           type: string
@@ -484,20 +536,20 @@ components:
 
         description:
           type: string
-          example: Luxury apartment in Paris
+          example: Cozy loft with a stunning view of the city
 
         image:
           type: string
-          example: image.png
+          example: image.jpg
 
         date:
           type: string
           format: date
-          example: 2025-01-01
+          example: 2025-06-01
 
         cost:
           type: number
-          example: 10000
+          example: 180
 
         town:
           type: string
@@ -508,7 +560,7 @@ components:
           type: array
           items:
             type: string
-          example: [image1.png, image2.png, image3.png]
+          example: [image1.jpg, image2.jpg, image3.jpg, image4.jpg, image5.jpg, image6.jpg]
 
         isPremium:
           type: boolean
@@ -516,11 +568,11 @@ components:
 
         isFavorite:
           type: boolean
-          example: true
+          example: false
 
         rating:
           type: number
-          example: 5
+          example: 4.5
 
         apartmentType:
           type: string
@@ -529,31 +581,28 @@ components:
 
         roomCount:
           type: integer
-          example: 5
+          example: 4
 
         guestCount:
           type: integer
-          example: 2
+          example: 4
 
         amenities:
           type: array
           items:
             type: string
             enum:
-              [
-                Breakfast,
-                Air conditioning,
-                Laptop friendly workspace,
-                Baby seat,
-                Washer,
-                Towels,
-                Fridge,
-              ]
-            example: [Breakfast, Air conditioning, Washer]
-
-        userId:
-          type: string
-          example: 9b1e9c2d-27f5-4c39-bd5e-0139a60a2dbb
+              - Breakfast
+              - Air conditioning
+              - Laptop friendly workspace
+              - Baby seat
+              - Washer
+              - Towels
+              - Fridge
+          example:
+            - Fridge
+            - Breakfast
+            - Washer
 
     offerSummary:
       type: object
@@ -561,15 +610,15 @@ components:
       properties:
         id:
           type: string
-          example: 5f4dcc3b5aa765d61d8327deb882cf99vdvd515vdvd
+          example: 6329c3d6a04ab1061c6425ef
 
         title:
           type: string
-          example: Luxury apartment in Paris
+          example: Modern Loft in Berlin
 
         cost:
           type: number
-          example: 10000
+          example: 180
 
         apartmentType:
           type: string
@@ -583,7 +632,7 @@ components:
         date:
           type: string
           format: date
-          example: 2025-01-01
+          example: 2025-06-01
 
         town:
           type: string
@@ -592,7 +641,7 @@ components:
 
         image:
           type: string
-          example: image.png
+          example: image.jpg
 
         isPremium:
           type: boolean
@@ -600,7 +649,7 @@ components:
 
         rating:
           type: number
-          example: 5
+          example: 4.5
 
         commentCount:
           type: integer
@@ -608,7 +657,7 @@ components:
 
         userId:
           type: string
-          example: 9b1e9c2d-27f5-4c39-bd5e-0139a60a2dbb
+          example: 6329c3d6a04ab1061c6425eu
 
     offer:
       type: object
@@ -631,33 +680,34 @@ components:
           amenities,
           userId,
           commentCount,
+          coordinates,
         ]
 
       properties:
         id:
           type: string
-          example: 5f4dcc3b5aa765d61d8327deb882cf99vdvd515vdvd
+          example: 6329c3d6a04ab1061c6425ef
 
         title:
           type: string
-          example: Luxury apartment in Paris
+          example: Modern Loft in Berlin
 
         description:
           type: string
-          example: Luxury apartment in Paris
+          example: Cozy loft with a stunning view of the city
 
         image:
           type: string
-          example: image1.png
+          example: image.jpg
 
         date:
           type: string
           format: date
-          example: 2025-01-01
+          example: 2025-06-01
 
         cost:
           type: number
-          example: 10000
+          example: 180
 
         town:
           type: string
@@ -668,7 +718,7 @@ components:
           type: array
           items:
             type: string
-          example: [image1.png.jpg, image2.png, image3.png]
+          example: [img1.jpg, img2.jpg, img3.jpg, img4.jpg, img5.jpg, img6.jpg]
 
         isPremium:
           type: boolean
@@ -680,7 +730,7 @@ components:
 
         rating:
           type: number
-          example: 5
+          example: 4.5
 
         apartmentType:
           type: string
@@ -689,35 +739,40 @@ components:
 
         roomCount:
           type: integer
-          example: 5
+          example: 4
 
         guestCount:
           type: integer
-          example: 2
+          example: 4
 
         amenities:
           type: array
           items:
             type: string
             enum:
-              [
-                Breakfast,
-                Air conditioning,
-                Laptop friendly workspace,
-                Baby seat,
-                Washer,
-                Towels,
-                Fridge,
-              ]
-            example: [Breakfast, Air conditioning, Washer]
+              - Breakfast
+              - Air conditioning
+              - Laptop friendly workspace
+              - Baby seat
+              - Washer
+              - Towels
+              - Fridge
+          example:
+            - Fridge
+            - Breakfast
+            - Washer
 
         userId:
           type: string
-          example: 9b1e9c2d-27f5-4c39-bd5e-0139a60a2dbb
+          example: 6329c3d6a04ab1061c6425eu
 
         commentCount:
           type: integer
-          example: 5
+          example: 4
+
+        coordinates:
+          type: object
+          example: { latitude: 48.85661, longitude: 2.351499 }
 
     createComment:
       type: object
@@ -726,12 +781,12 @@ components:
       properties:
         text:
           type: string
-          example: Класс!
+          example: Класс! 5/5
 
         date:
           type: string
           format: date
-          example: 2025-01-01
+          example: 2025-06-01
 
         rating:
           type: number
@@ -739,11 +794,11 @@ components:
 
         author:
           type: string
-          example: 9b1e9c2d-27f5-4c39-bd5e-0139a60a2dbb
+          example: 6329c3d6a04ab1061c6425ea
 
         offerId:
           type: string
-          example: 5f4dcc3b5aa765d61d8327deb882cf99
+          example: 6329c3d6a04ab1061c6425ef
 
     comment:
       type: object
@@ -751,16 +806,16 @@ components:
       properties:
         id:
           type: string
-          example: 5f4dcc3b5aa765d61d8327deb882cf99vdvd515vdvd
+          example: 6329c3d6a04ab1061c6425ec
 
         text:
           type: string
-          example: Класс!
+          example: Класс! 5/5
 
         date:
           type: string
           format: date
-          example: 2025-01-01
+          example: 2025-06-01
 
         rating:
           type: number
@@ -768,8 +823,8 @@ components:
 
         author:
           type: string
-          example: 9b1e9c2d-27f5-4c39-bd5e-0139a60a2dbb
+          example: 6329c3d6a04ab1061c6425ea
 
         offerId:
           type: string
-          example: 5f4dcc3b5aa765d61d8327deb882cf99
+          example: 6329c3d6a04ab1061c6425ef
