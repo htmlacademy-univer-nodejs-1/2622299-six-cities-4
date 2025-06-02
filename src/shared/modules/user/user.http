@@ -7,6 +7,7 @@ Content-Type: application/json
 {
   "mail": "user@example.com",
   "name": "User",
+  "avatar": "avatar.jpg",
   "password": "123456",
   "type": "regular"
 }
@@ -28,6 +29,28 @@ Content-Type: application/json
 GET http://localhost:3000/offers
 
 ### Получить избранные (требует токен)
+
+### Создать предложение
+
+POST http://localhost:3000/offers HTTP/1.1
+
+{
+  "title": "Modern Loft in Berlin",
+  "description": "Cozy loft with a stunning view of the city",
+  "image": "image.jpg",
+  "date": "2025-06-01",
+  "cost": 180,
+  "town": "Paris",
+  "gallery": ["image1.jpg", "image2.jpg", "image3.jpg", "image4.jpg", "image5.jpg", "image6.jpg"],
+  "isPremium": true,
+  "isFavorite": false,
+  "rating": 4.5,
+  "apartmentType": "apartment",
+  "roomCount": 4,
+  "guestCount": 4,
+  "amenities": ["Fridge", "Breakfast", "Washer"],
+  "userId": "6329c3d6a04ab1061c6425ea"
+}
 
 GET http://localhost:3000/offers/favorites
 Authorization: Bearer <токен>
